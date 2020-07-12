@@ -1,0 +1,14 @@
+mysql-host-write: 127.0.0.1
+mysql-port-write: 3306
+mysql-database-write: demo
+mysql-user-write: root
+mysql-psw-write: 123456
+
+mysql-host-read1: 127.0.0.1
+mysql-port-read1: 3306
+mysql-database-read1: demo
+mysql-user-read1: root
+mysql-psw-read1: 123456
+
+redis-host: 127.0.0.1
+redis-port: 6379

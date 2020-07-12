@@ -1,0 +1,13 @@
+
+CREATE DATABASE IF NOT EXISTS `demo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+USE `demo`;
+CREATE TABLE IF NOT EXISTS `user` (
+    `uid` BIGINT(20) UNSIGNED AUTO_INCREMENT COMMENT '用户增长主键',
+    `name` VARCHAR(255) NOT NULL COMMENT '用户名字',
+    `age` INT(10) NOT NULL COMMENT '',
+    `tel` VARCHAR(50) DEFAULT NULL COMMENT '',
+    `address` VARCHAR(1024) DEFAULT NULL COMMENT '',
+    PRIMARY KEY(`uid`),
+    UNIQUE KEY `uniq_n` (`name`)
+)ENGINE=InnoDB DEFAULT CHARSET='utf8' COMMENT='测试使用的用户信息表';
