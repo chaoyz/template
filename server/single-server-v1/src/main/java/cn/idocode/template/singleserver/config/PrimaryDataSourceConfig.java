@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  * 2020-07-08 20:53
  */
 @Configuration
-@MapperScan(basePackages = "com.tencent.yyb.qms.repository", sqlSessionTemplateRef = "writeSqlSessionTemplate")
+@MapperScan(basePackages = "cn.idocode.template.singleserver.repository.write", sqlSessionTemplateRef = "writeSqlSessionTemplate")
 public class PrimaryDataSourceConfig {
 
     @Primary

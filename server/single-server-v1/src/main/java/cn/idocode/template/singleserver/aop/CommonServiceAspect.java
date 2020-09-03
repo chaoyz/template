@@ -1,10 +1,15 @@
 package cn.idocode.template.singleserver.aop;
 
+import cn.idocode.template.singleserver.config.ProjectConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,17 +22,41 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class CommonServiceAspect {
+    private final ObjectMapper om = new ObjectMapper();
 
-    @Pointcut(value = "execution(public * cn.idocode.template.singleserver.service.*(..))")
-    public void servicePointcut() {}
+    @Autowired
+    private ProjectConfig projectConfig;
 
-    @Before("servicePointcut()")
-    public void before() {
-        // something log or other
+    @Pointcut(value = "execution(public * cn.idocode.template.singleserver.service..*(..)) && !@annotation(cn.idocode.template.singleserver.annotation.NotAspect)")
+    public void servicePointcut() {
     }
 
-    @After("servicePointcut()")
-    public void after() {
-        // something log or other
+    @Around(value = "servicePointcut()")
+    public Object around(ProceedingJoinPoint pjp) throws Throwable {
+        Object result = null;
+        // TODO 后续改进根据远程配置文件控制一些debug日志输出
+        if (projectConfig.isDebugLog()) {
+            Signature signature = pjp.getSignature();
+            Class declaringType = signature.getDeclaringType();
+            String typeName = signature.getDeclaringTypeName();
+            String name = signature.getName();
+            Object[] args = pjp.getArgs();
+            String argsStr = null;
+            try {
+                argsStr = om.writeValueAsString(args);
+            } catch (JsonProcessingException e) {
+                log.warn("CommonServiceAspect json to string error, can ignore it.");
+            }
+            long startTime = System.currentTimeMillis();
+            log.info("service package method invoke. declaringType:{}, DeclaringTypeName:{}, Name:{}, args:{}",
+                    declaringType, typeName, name, argsStr);
+            result = pjp.proceed();
+            long endTime = System.currentTimeMillis();
+            log.info("service package method invoke end. declaringType:{}, DeclaringTypeName:{}, Name:{}, args:{},time:{}ms",
+                    declaringType, typeName, name, argsStr, (endTime - startTime));
+        } else {
+            result = pjp.proceed();
+        }
+        return result;
     }
 }

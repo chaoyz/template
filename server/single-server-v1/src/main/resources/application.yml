@@ -1,16 +1,42 @@
 server:
   port: 8080
   forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        name: project-sessionid-name
+
+project:
+  debug-log: true
+
+# 日志配置
+logging:
+  path: ./log/
+  config: classpath:logback-spring.xml
 
 spring:
   profiles:
     active: dev
+  servlet:
+    multipart:
+      max-file-size: 500MB  # 设置最大上传文件大小500M
+      max-request-size: 500MB
+#  session:
+#    store-type: NONE
   session:
     store-type: redis
     redis:
       namespace: spring:session
       flush-mode: immediate
     timeout: 1440
+  redis:
+    host: ${redis-host}
+    port: ${redis-port}
+    database: 0
+    jedis:
+      pool:
+        max-active: 100
+        min-idle: 10
   datasource:
     write:
       #mysql 配置
@@ -44,7 +70,7 @@ spring:
       filters: stat,wall,slf4j
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-    read1:
+    read:
       #mysql 配置
       dbType: mysql
       driverClassName: com.mysql.jdbc.Driver
@@ -76,16 +102,10 @@ spring:
       filters: stat,wall,slf4j
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-  redis:
-    host: ${redis-host}
-    port: ${redis-port}
-    database: 0
-    jedis:
-      pool:
-        max-active: 100
-        min-idle: 10
-
-logging:
-  config: classpath:logback-spring.xml
-  file:
-    path: ./log/
+    quartz:
+      #mysql 配置
+      dbType: mysql
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://${mysql-host-quartz}:${mysql-port-quartz}/${mysql-database-quartz}?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      username: ${mysql-user-quartz}
+      password: ${mysql-psw-quartz}
